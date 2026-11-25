@@ -8,29 +8,32 @@ import { cn } from "@/lib/utils";
 import { LogoMark, Wordmark } from "./logo";
 import { isActivePath, NAV_SECTIONS } from "./nav-items";
 
-function Brand({ collapsed }: { collapsed?: boolean }) {
+function Brand() {
   return (
     <Link href="/" className="flex items-center gap-2.5 rounded-md text-foreground" aria-label="Qubit Admin home">
       <LogoMark />
-      {!collapsed && <Wordmark />}
+      <span className="collapsed:hidden">
+        <Wordmark />
+      </span>
     </Link>
   );
 }
 
+/*
+ * Collapsed styling uses the `collapsed:` variant (see globals.css), which only applies inside
+ * the desktop sidebar. The `collapsed` prop is used for non-visual attributes only.
+ */
 function NavLinks({ collapsed, onNavigate }: { collapsed?: boolean; onNavigate?: () => void }) {
   const pathname = usePathname();
   return (
     <nav aria-label="Main" className="flex-1 space-y-7 overflow-y-auto px-3 py-5">
       {NAV_SECTIONS.map((section, sectionIndex) => (
         <div key={section.title}>
-          {collapsed ? (
-            <div className="mx-auto mb-3 h-px w-6 bg-line-strong" aria-hidden />
-          ) : (
-            <p className="eyebrow mb-2.5 flex items-center gap-2 px-3">
-              <span className="text-accent-text">{String(sectionIndex + 1).padStart(2, "0")}</span>
-              {section.title}
-            </p>
-          )}
+          <div className="mx-auto mb-3 hidden h-px w-6 bg-line-strong collapsed:block" aria-hidden />
+          <p className="eyebrow mb-2.5 flex items-center gap-2 px-3 collapsed:hidden">
+            <span className="text-accent-text">{String(sectionIndex + 1).padStart(2, "0")}</span>
+            {section.title}
+          </p>
           <ul className="space-y-0.5">
             {section.items.map((item) => {
               const active = isActivePath(pathname, item.href);
@@ -44,20 +47,20 @@ function NavLinks({ collapsed, onNavigate }: { collapsed?: boolean; onNavigate?:
                     title={collapsed ? item.label : undefined}
                     className={cn(
                       "group relative flex h-9 items-center gap-3 rounded-lg px-3 text-sm font-medium transition-[background-color,color,box-shadow] duration-200 ease-out",
-                      collapsed && "justify-center px-0",
+                      "collapsed:justify-center collapsed:px-0",
                       active
                         ? "bg-surface text-foreground shadow-sm ring-1 ring-line"
                         : "text-ink-2 hover:bg-foreground/5 hover:text-foreground",
                     )}
                   >
                     <Icon className="size-[18px] shrink-0" strokeWidth={1.75} aria-hidden />
-                    <span className={cn(collapsed && "sr-only")}>{item.label}</span>
+                    <span className="collapsed:sr-only">{item.label}</span>
                     {/* Active indicator: the landing page's 4px orange square. */}
                     <span
                       aria-hidden
                       className={cn(
-                        "absolute size-1 rounded-[1px] bg-accent transition-transform duration-300 ease-out",
-                        collapsed ? "bottom-1 left-1/2 -translate-x-1/2" : "top-1/2 right-3 -translate-y-1/2",
+                        "absolute top-1/2 right-3 size-1 -translate-y-1/2 rounded-[1px] bg-accent transition-transform duration-300 ease-out",
+                        "collapsed:top-auto collapsed:right-auto collapsed:bottom-1 collapsed:left-1/2 collapsed:-translate-x-1/2 collapsed:translate-y-0",
                         active ? "scale-100" : "scale-0",
                       )}
                     />
@@ -74,7 +77,7 @@ function NavLinks({ collapsed, onNavigate }: { collapsed?: boolean; onNavigate?:
 
 function DemoNotice() {
   return (
-    <div className="mx-3 mb-3 rounded-xl bg-surface p-3 ring-1 ring-line">
+    <div className="mx-3 mb-3 rounded-xl bg-surface p-3 ring-1 ring-line collapsed:hidden">
       <p className="eyebrow flex items-center gap-2 text-ink-2">
         <span className="size-1.5 animate-[pulse-dot_2s_ease-in-out_infinite] rounded-full bg-success-dot" aria-hidden />
         Demo workspace
@@ -92,35 +95,25 @@ interface DesktopSidebarProps {
 export function DesktopSidebar({ collapsed, onToggle }: DesktopSidebarProps) {
   return (
     <aside
-      className={cn(
-        "sticky top-0 hidden h-dvh shrink-0 flex-col border-r border-line bg-background transition-[width] duration-300 ease-out lg:flex",
-        collapsed ? "w-[72px]" : "w-64",
-      )}
+      data-desktop-sidebar
+      className="sticky top-0 hidden h-dvh w-64 shrink-0 flex-col border-r border-line bg-background transition-[width] duration-300 ease-out collapsed:w-[72px] lg:flex"
     >
-      <div className={cn("flex h-16 items-center px-6", collapsed && "justify-center px-0")}>
-        <Brand collapsed={collapsed} />
+      <div className="flex h-16 items-center px-6 collapsed:justify-center collapsed:px-0">
+        <Brand />
       </div>
       <NavLinks collapsed={collapsed} />
-      {!collapsed && <DemoNotice />}
+      <DemoNotice />
       <div className="border-t border-line p-3">
         <button
           type="button"
           onClick={onToggle}
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           aria-expanded={!collapsed}
-          className={cn(
-            "flex h-9 w-full items-center gap-3 rounded-lg px-3 text-sm font-medium text-muted transition-colors duration-200 hover:bg-foreground/5 hover:text-foreground",
-            collapsed && "justify-center px-0",
-          )}
+          className="flex h-9 w-full items-center gap-3 rounded-lg px-3 text-sm font-medium text-muted transition-colors duration-200 hover:bg-foreground/5 hover:text-foreground collapsed:justify-center collapsed:px-0"
         >
-          {collapsed ? (
-            <PanelLeftOpen className="size-[18px]" strokeWidth={1.75} aria-hidden />
-          ) : (
-            <>
-              <PanelLeftClose className="size-[18px]" strokeWidth={1.75} aria-hidden />
-              <span>Collapse</span>
-            </>
-          )}
+          <PanelLeftOpen className="hidden size-[18px] collapsed:block" strokeWidth={1.75} aria-hidden />
+          <PanelLeftClose className="size-[18px] collapsed:hidden" strokeWidth={1.75} aria-hidden />
+          <span className="collapsed:hidden">Collapse</span>
         </button>
       </div>
     </aside>

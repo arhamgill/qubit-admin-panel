@@ -3,13 +3,11 @@
 import { Menu, Monitor, Moon, Sun } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useProfile } from "@/components/providers/profile-provider";
-import { Avatar } from "@/components/ui/avatar";
-import { Skeleton } from "@/components/ui/feedback";
 import { useTheme } from "@/hooks/use-theme";
 import type { ThemePreference } from "@/types";
 import { LogoMark } from "./logo";
 import { isActivePath, NAV_SECTIONS } from "./nav-items";
+import { UserMenu } from "./user-menu";
 
 const NEXT_THEME: Record<ThemePreference, ThemePreference> = { system: "light", light: "dark", dark: "system" };
 const THEME_ICON = { light: Sun, dark: Moon, system: Monitor } as const;
@@ -55,8 +53,6 @@ function Breadcrumb() {
 }
 
 export function Header({ onOpenMenu }: { onOpenMenu: () => void }) {
-  const { profile, isLoading } = useProfile();
-
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-line bg-background/80 px-4 backdrop-blur-md backdrop-saturate-150 sm:px-6 lg:px-8">
       <button type="button" onClick={onOpenMenu} aria-label="Open navigation" className={`-ml-2 lg:hidden ${iconButton}`}>
@@ -71,27 +67,7 @@ export function Header({ onOpenMenu }: { onOpenMenu: () => void }) {
       <div className="ml-auto flex items-center gap-1.5">
         <ThemeToggle />
         <div className="mx-1.5 h-5 w-px bg-line-strong" aria-hidden />
-        <Link
-          href="/profile"
-          className="flex items-center gap-2.5 rounded-lg p-1 transition-colors duration-200 hover:bg-foreground/5 sm:pr-3"
-          aria-label={profile ? `Your profile: ${profile.name}` : "Your profile"}
-        >
-          {isLoading || !profile ? (
-            <Skeleton className="size-8 rounded-full" />
-          ) : (
-            <>
-              <Avatar name={profile.name} seed="profile" />
-              <span className="hidden min-w-0 text-left sm:block">
-                <span className="block max-w-40 truncate text-[13px] leading-tight font-medium text-foreground">
-                  {profile.name}
-                </span>
-                <span className="block max-w-40 truncate text-xs leading-tight text-muted">
-                  {profile.jobTitle || "Admin"}
-                </span>
-              </span>
-            </>
-          )}
-        </Link>
+        <UserMenu />
       </div>
     </header>
   );

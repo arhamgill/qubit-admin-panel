@@ -4,6 +4,13 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /*
+ * Collapsed desktop sidebar, driven by `data-sidebar` on <html> (set by theme-init.js before
+ * first paint, then kept in sync by AppShell). CSS-driven so the server render never flashes
+ * the expanded state. Scoped to [data-desktop-sidebar] so the mobile drawer is unaffected.
+ */
+@custom-variant collapsed (&:where([data-sidebar="collapsed"] [data-desktop-sidebar], [data-sidebar="collapsed"] [data-desktop-sidebar] *));
+
+/*
  * Design tokens, shared with the Qubit landing page:
  * warm paper + ink neutrals, hairline borders, ink-tinted shadows and a single
  * "signal" orange used sparingly (shapes, indicators, focus, small labels).

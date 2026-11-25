@@ -10,15 +10,35 @@ const USERS_KEY = "v1:users";
 /** Hard cap so the demo can't grow localStorage without bound. */
 export const MAX_USERS = 500;
 
-const storedUsersSchema = z.array(userSchema).max(MAX_USERS);
+const storedListSchema = z.array(z.unknown()).max(MAX_USERS);
 
-/** Internal: reads users from storage, seeding on first run or if data is invalid. */
-export function readAllUsers(): User[] {
-  const stored = readJson(USERS_KEY, storedUsersSchema);
-  if (stored) return stored;
+function reseed(): User[] {
   const seed = createSeedUsers();
   writeJson(USERS_KEY, seed);
   return seed;
+}
+
+/**
+ * Internal: reads users from storage.
+ * - First run, or the list itself is unreadable: seed it.
+ * - Some records are corrupt or tampered with: drop only those and keep the rest.
+ * - Every record is corrupt: treat the data as broken and restore the seed.
+ */
+export function readAllUsers(): User[] {
+  const stored = readJson(USERS_KEY, storedListSchema);
+  if (!stored) return reseed();
+  const seenIds = new Set<string>();
+  const valid: User[] = [];
+  for (const record of stored) {
+    const parsed = userSchema.safeParse(record);
+    if (parsed.success && !seenIds.has(parsed.data.id)) {
+      seenIds.add(parsed.data.id);
+      valid.push(parsed.data);
+    }
+  }
+  if (stored.length > 0 && valid.length === 0) return reseed();
+  if (valid.length !== stored.length) writeJson(USERS_KEY, valid);
+  return valid;
 }
 
 function saveUsers(users: User[]) {

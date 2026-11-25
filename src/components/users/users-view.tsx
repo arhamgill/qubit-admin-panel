@@ -37,42 +37,71 @@ export function UsersView() {
     listUsers(query),
   );
 
+  /**
+   * Writes the query to the URL. Filter, sort and page changes `push` a history entry so the
+   * Back button undoes them; corrections (refining a search, snapping to a valid page) `replace`.
+   */
   const updateQuery = useCallback(
-    (patch: Partial<UserQuery>) => {
+    (patch: Partial<UserQuery>, mode: "push" | "replace" = "push") => {
       const next: UserQuery = { ...query, ...patch };
       const params = new URLSearchParams();
       (Object.keys(next) as (keyof UserQuery)[]).forEach((key) => {
         if (next[key] !== DEFAULT_QUERY[key]) params.set(key, String(next[key]));
       });
       const qs = params.toString();
-      router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+      const url = qs ? `${pathname}?${qs}` : pathname;
+      if (mode === "push") router.push(url, { scroll: false });
+      else router.replace(url, { scroll: false });
     },
     [query, pathname, router],
   );
 
   // Search box: local state for instant typing, debounced into the URL.
   const [searchText, setSearchText] = useState(query.search);
+  // Tracks the URL value the box last saw, and the value this component itself pushed,
+  // so outside changes (sidebar link, Back button, "View all") re-sync the box while our
+  // own debounced writes never overwrite what the user is still typing.
+  const [seenUrlSearch, setSeenUrlSearch] = useState(query.search);
+  const [pushedSearch, setPushedSearch] = useState<string | null>(null);
+  if (query.search !== seenUrlSearch) {
+    setSeenUrlSearch(query.search);
+    if (query.search !== pushedSearch) setSearchText(query.search);
+    setPushedSearch(null);
+  }
+
   useEffect(() => {
     const trimmed = searchText.trim();
     if (trimmed === query.search) return;
-    const timer = setTimeout(() => updateQuery({ search: trimmed, page: 1 }), SEARCH_DEBOUNCE_MS);
+    const timer = setTimeout(() => {
+      setPushedSearch(trimmed);
+      // Starting or clearing a search is a new history step; refining one is not.
+      const refining = trimmed !== "" && query.search !== "";
+      updateQuery({ search: trimmed, page: 1 }, refining ? "replace" : "push");
+    }, SEARCH_DEBOUNCE_MS);
     return () => clearTimeout(timer);
   }, [searchText, query.search, updateQuery]);
 
   // If the requested page no longer exists (e.g. after deleting the last row), snap to the last valid page.
   useEffect(() => {
-    if (data && !isLoading && data.page !== query.page) updateQuery({ page: data.page });
+    if (data && !isLoading && data.page !== query.page) updateQuery({ page: data.page }, "replace");
   }, [data, isLoading, query.page, updateQuery]);
 
   const [formTarget, setFormTarget] = useState<FormTarget>(null);
   const [deleteTarget, setDeleteTarget] = useState<User | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const hasActiveFilters = query.search !== "" || query.role !== "all" || query.status !== "all";
 
   function clearFilters() {
     setSearchText("");
+    setPushedSearch("");
     updateQuery({ search: "", role: "all", status: "all", page: 1 });
+  }
+
+  function openDelete(user: User) {
+    setDeleteError(null);
+    setDeleteTarget(user);
   }
 
   function handleSort(field: SortField) {
@@ -92,13 +121,15 @@ export function UsersView() {
   async function confirmDelete() {
     if (!deleteTarget || deleting) return;
     setDeleting(true);
+    setDeleteError(null);
     try {
       await deleteUser(deleteTarget.id);
       toast({ title: "User deleted", description: `${deleteTarget.name} has been removed.` });
       setDeleteTarget(null);
       reload();
     } catch (err) {
-      toast({ title: "Couldn't delete user", description: getErrorMessage(err), variant: "error" });
+      // Shown inside the dialog; a toast would be hidden behind the open modal.
+      setDeleteError(getErrorMessage(err));
     } finally {
       setDeleting(false);
     }
@@ -169,7 +200,7 @@ export function UsersView() {
               dir={query.dir}
               onSort={handleSort}
               onEdit={(user) => setFormTarget({ mode: "edit", user })}
-              onDelete={setDeleteTarget}
+              onDelete={openDelete}
             />
             <Pagination
               page={data.page}
@@ -200,6 +231,7 @@ export function UsersView() {
         }
         confirmLabel="Delete user"
         loading={deleting}
+        error={deleteError}
         onConfirm={confirmDelete}
         onCancel={() => setDeleteTarget(null)}
       />

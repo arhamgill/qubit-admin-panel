@@ -6,7 +6,7 @@ import { useToast } from "@/components/providers/toast-provider";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader } from "@/components/ui/card";
 import { TextField } from "@/components/ui/form-controls";
-import { changePassword } from "@/lib/api/account";
+import { changePassword, DEMO_PASSWORD } from "@/lib/api/account";
 import { ApiError, getErrorMessage } from "@/lib/api/client";
 import { passwordChangeSchema, toFieldErrors, type FieldErrors } from "@/lib/validation";
 
@@ -83,6 +83,7 @@ export function PasswordForm() {
           value={values.currentPassword}
           onChange={(e) => update("currentPassword", e.target.value)}
           error={errors.currentPassword}
+          hint={`Demo account password: ${DEMO_PASSWORD}`}
         />
         <div className="grid gap-4 sm:grid-cols-2">
           <TextField

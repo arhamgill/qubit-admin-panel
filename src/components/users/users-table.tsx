@@ -127,7 +127,7 @@ export function UsersTable({ users, loading, sort, dir, onSort, onEdit, onDelete
             {users.map((user) => (
               <tr key={user.id} className="transition-colors duration-150 hover:bg-background/60">
                 <td className="py-3 pr-4 pl-5 sm:pl-6">
-                  <div className="flex items-center gap-3">
+                  <div className="flex max-w-[18rem] items-center gap-3 xl:max-w-[22rem]">
                     <Avatar name={user.name} seed={user.id} />
                     <div className="min-w-0">
                       <p className="truncate font-medium text-foreground">{user.name}</p>

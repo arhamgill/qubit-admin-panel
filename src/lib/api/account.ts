@@ -4,6 +4,9 @@ import { passwordChangeSchema, profileSchema, settingsSchema, toFieldErrors } fr
 import type { Profile, Settings } from "@/types";
 import { ApiError, simulateLatency } from "./client";
 
+/** The demo account's password, used by the mock sign-in and the change-password check. */
+export const DEMO_PASSWORD = "Demo1234";
+
 const PROFILE_KEY = "v1:profile";
 const SETTINGS_KEY = "v1:settings";
 
@@ -42,8 +45,9 @@ export async function updateSettings(input: unknown): Promise<Settings> {
 }
 
 /**
- * Mock password change. The input is validated exactly as a real endpoint
- * would, but passwords are never stored anywhere, not even in localStorage.
+ * Mock password change. The input is validated exactly as a real endpoint would and the
+ * current password is checked against the demo password, but the new password is never
+ * stored anywhere, not even in localStorage.
  */
 export async function changePassword(input: unknown): Promise<void> {
   await simulateLatency(400, 800);
@@ -51,12 +55,20 @@ export async function changePassword(input: unknown): Promise<void> {
   if (!parsed.success) {
     throw new ApiError("Please fix the highlighted fields.", 422, toFieldErrors(parsed.error));
   }
+  if (parsed.data.currentPassword !== DEMO_PASSWORD) {
+    throw new ApiError("Please fix the highlighted fields.", 422, {
+      currentPassword: "Current password is incorrect",
+    });
+  }
 }
 
-/** Clears all demo data; users, profile and settings fall back to their seeds on next read. */
+/** Clears all demo data; users, profile, settings and UI preferences fall back to their defaults. */
 export async function resetDemoData(): Promise<void> {
   await simulateLatency();
   storageRemove("v1:users");
   storageRemove(PROFILE_KEY);
   storageRemove(SETTINGS_KEY);
+  // UI preferences too, so "restore defaults" means everything.
+  storageRemove("theme");
+  storageRemove("sidebar");
 }

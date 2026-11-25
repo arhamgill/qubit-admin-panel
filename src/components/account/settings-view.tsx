@@ -169,17 +169,20 @@ function DangerZone({ onReset }: { onReset: () => void }) {
   const { reload: reloadProfile } = useProfile();
   const [confirming, setConfirming] = useState(false);
   const [resetting, setResetting] = useState(false);
+  const [resetError, setResetError] = useState<string | null>(null);
 
   async function handleReset() {
     setResetting(true);
+    setResetError(null);
     try {
       await resetDemoData();
       setConfirming(false);
       reloadProfile();
       onReset();
-      toast({ title: "Demo data reset", description: "Users, profile and settings were restored to their defaults." });
+      toast({ title: "Demo data reset", description: "Users, profile, settings and layout were restored to their defaults." });
     } catch (error) {
-      toast({ title: "Couldn't reset data", description: getErrorMessage(error), variant: "error" });
+      // Shown inside the dialog; a toast would be hidden behind the open modal.
+      setResetError(getErrorMessage(error));
     } finally {
       setResetting(false);
     }
@@ -189,8 +192,15 @@ function DangerZone({ onReset }: { onReset: () => void }) {
     <Card className="ring-danger/25">
       <CardHeader title="Demo data" description="All data lives in your browser. Reset it to start fresh." />
       <div className="flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
-        <p className="text-sm text-muted">Restores the original users, profile and settings.</p>
-        <Button variant="secondary" onClick={() => setConfirming(true)} className="text-danger">
+        <p className="text-sm text-muted">Restores the original users, profile, settings, theme and layout.</p>
+        <Button
+          variant="secondary"
+          onClick={() => {
+            setResetError(null);
+            setConfirming(true);
+          }}
+          className="text-danger"
+        >
           <RotateCcw className="size-4" strokeWidth={1.75} aria-hidden />
           Reset demo data
         </Button>
@@ -198,9 +208,10 @@ function DangerZone({ onReset }: { onReset: () => void }) {
       <ConfirmDialog
         open={confirming}
         title="Reset all demo data?"
-        description="Any users you've added, edited or deleted, plus your profile and settings, will be restored to their defaults."
+        description="Any users you've added, edited or deleted, plus your profile, settings, theme and sidebar layout, will be restored to their defaults."
         confirmLabel="Reset data"
         loading={resetting}
+        error={resetError}
         onConfirm={handleReset}
         onCancel={() => setConfirming(false)}
       />

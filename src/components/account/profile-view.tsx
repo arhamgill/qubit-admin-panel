@@ -120,7 +120,7 @@ function ProfileForm({ profile, onSaved }: { profile: Profile; onSaved: () => vo
       onSaved();
     } catch (error) {
       if (error instanceof ApiError && error.fieldErrors) setErrors(error.fieldErrors as FieldErrors<Profile>);
-      toast({ title: "Couldn't save profile", description: getErrorMessage(error), variant: "error" });
+      else toast({ title: "Couldn't save profile", description: getErrorMessage(error), variant: "error" });
     } finally {
       setSaving(false);
     }

@@ -1,8 +1,9 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ProfileProvider } from "@/components/providers/profile-provider";
 import { usePreference } from "@/hooks/use-preference";
+import { storageGet } from "@/lib/storage";
 import { Header } from "./header";
 import { DesktopSidebar, MobileSidebar } from "./sidebar";
 
@@ -12,6 +13,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const [sidebar, setSidebar] = usePreference("sidebar", SIDEBAR_STATES, "expanded");
   const [mobileOpen, setMobileOpen] = useState(false);
   const closeMobile = useCallback(() => setMobileOpen(false), []);
+
+  // Mirror the preference onto <html data-sidebar>, which drives the collapsed styles.
+  // Reads storage directly (not the hydration snapshot) so the first commit never flips it.
+  useEffect(() => {
+    document.documentElement.dataset.sidebar = storageGet("sidebar") === "collapsed" ? "collapsed" : "expanded";
+  }, [sidebar]);
 
   return (
     <ProfileProvider>
