@@ -16,16 +16,17 @@ export function RecentUsers({ users }: { users?: User[] }) {
         action={
           <Link
             href="/users?sort=joinedAt&dir=desc"
-            className="inline-flex items-center gap-1 rounded-md text-sm font-medium text-primary hover:underline focus-visible:outline-2 focus-visible:outline-ring"
+            className="group inline-flex items-center gap-1.5 rounded-md text-[13px] font-medium text-ink-2 transition-colors duration-200 hover:text-accent-text"
           >
-            View all <ArrowRight className="size-4" aria-hidden />
+            View all{" "}
+            <ArrowRight className="size-3.5 transition-transform duration-200 ease-out group-hover:translate-x-[3px]" aria-hidden />
           </Link>
         }
       />
-      <ul className="mt-3 divide-y divide-line">
+      <ul className="mt-4 divide-y divide-line border-t border-line">
         {!users
           ? Array.from({ length: 5 }, (_, i) => (
-              <li key={i} className="flex items-center gap-3 px-5 py-3">
+              <li key={i} className="flex items-center gap-3 px-5 py-3.5 sm:px-6">
                 <Skeleton className="size-8 rounded-full" />
                 <div className="flex-1 space-y-1.5">
                   <Skeleton className="h-4 w-36" />
@@ -34,17 +35,17 @@ export function RecentUsers({ users }: { users?: User[] }) {
               </li>
             ))
           : users.map((user) => (
-              <li key={user.id} className="flex items-center gap-3 px-5 py-3">
+              <li key={user.id} className="flex items-center gap-3 px-5 py-3.5 transition-colors duration-200 hover:bg-background/60 sm:px-6">
                 <Avatar name={user.name} seed={user.id} />
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium text-foreground">{user.name}</p>
-                  <p className="truncate text-sm text-muted">{user.email}</p>
+                  <p className="truncate text-[13px] text-muted">{user.email}</p>
                 </div>
                 <div className="hidden sm:block">
                   <RoleBadge role={user.role} />
                 </div>
                 <StatusBadge status={user.status} />
-                <span className="hidden w-24 text-right text-sm text-muted md:block">
+                <span className="hidden w-24 text-right font-mono text-xs text-muted md:block">
                   {formatRelative(user.joinedAt)}
                 </span>
               </li>

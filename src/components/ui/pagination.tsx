@@ -28,27 +28,27 @@ function pageWindow(page: number, totalPages: number): (number | null)[] {
 }
 
 const navButton =
-  "inline-flex size-8 items-center justify-center rounded-lg text-sm transition-colors " +
-  "focus-visible:outline-2 focus-visible:outline-ring disabled:pointer-events-none disabled:opacity-40";
+  "inline-flex size-8 items-center justify-center rounded-lg font-mono text-[12.5px] tabular-nums transition-colors duration-200 " +
+  "disabled:pointer-events-none disabled:opacity-35";
 
 export function Pagination({ page, totalPages, total, pageSize, onPageChange, onPageSizeChange }: PaginationProps) {
   const from = total === 0 ? 0 : (page - 1) * pageSize + 1;
   const to = Math.min(page * pageSize, total);
 
   return (
-    <div className="flex flex-col gap-3 border-t border-line px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
-      <div className="flex items-center gap-3 text-sm text-muted">
+    <div className="flex flex-col gap-3 border-t border-line px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+      <div className="flex items-center gap-3 text-[13px] text-muted">
         <span>
-          Showing <span className="font-medium text-foreground">{formatNumber(from)}</span>–
-          <span className="font-medium text-foreground">{formatNumber(to)}</span> of{" "}
-          <span className="font-medium text-foreground">{formatNumber(total)}</span>
+          Showing <span className="font-mono font-medium text-foreground tabular-nums">{formatNumber(from)}</span>–
+          <span className="font-mono font-medium text-foreground tabular-nums">{formatNumber(to)}</span> of{" "}
+          <span className="font-mono font-medium text-foreground tabular-nums">{formatNumber(total)}</span>
         </span>
         <label className="flex items-center gap-2">
-          <span className="sr-only sm:not-sr-only">Rows</span>
+          <span className="eyebrow sr-only sm:not-sr-only">Rows</span>
           <select
             value={pageSize}
             onChange={(e) => onPageSizeChange(Number(e.target.value))}
-            className="h-8 rounded-lg border border-line bg-surface px-2 text-sm text-foreground focus:ring-2 focus:ring-ring focus:outline-none"
+            className="h-8 rounded-lg bg-surface px-2 font-mono text-[12.5px] text-foreground shadow-sm ring-1 ring-line-strong ring-inset"
             aria-label="Rows per page"
           >
             {PAGE_SIZES.map((size) => (
@@ -63,7 +63,7 @@ export function Pagination({ page, totalPages, total, pageSize, onPageChange, on
       <nav aria-label="Pagination" className="flex items-center gap-1">
         <button
           type="button"
-          className={cn(navButton, "text-muted hover:bg-surface-2 hover:text-foreground")}
+          className={cn(navButton, "text-muted hover:bg-foreground/5 hover:text-foreground")}
           onClick={() => onPageChange(page - 1)}
           disabled={page <= 1}
           aria-label="Previous page"
@@ -85,8 +85,8 @@ export function Pagination({ page, totalPages, total, pageSize, onPageChange, on
               className={cn(
                 navButton,
                 p === page
-                  ? "bg-primary font-medium text-primary-foreground"
-                  : "text-foreground hover:bg-surface-2",
+                  ? "bg-primary font-medium text-primary-foreground shadow-sm"
+                  : "text-ink-2 hover:bg-foreground/5 hover:text-foreground",
               )}
             >
               {p}
@@ -95,7 +95,7 @@ export function Pagination({ page, totalPages, total, pageSize, onPageChange, on
         )}
         <button
           type="button"
-          className={cn(navButton, "text-muted hover:bg-surface-2 hover:text-foreground")}
+          className={cn(navButton, "text-muted hover:bg-foreground/5 hover:text-foreground")}
           onClick={() => onPageChange(page + 1)}
           disabled={page >= totalPages}
           aria-label="Next page"

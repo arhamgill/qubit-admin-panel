@@ -23,8 +23,13 @@ export function SettingsView() {
 
   return (
     <>
-      <PageHeader title="Settings" description="Personalise how the dashboard looks and what you get notified about." />
-      <div className="space-y-6">
+      <PageHeader
+        index="04"
+        eyebrow="Preferences"
+        title="Settings"
+        description="Personalise how the dashboard looks and what you get notified about."
+      />
+      <div className="space-y-5">
         <AppearanceCard />
         {error && !data ? (
           <Card>
@@ -57,7 +62,7 @@ function AppearanceCard() {
   return (
     <Card>
       <CardHeader title="Appearance" description="Applies instantly and is remembered on this device." titleId="appearance-title" />
-      <div role="radiogroup" aria-labelledby="appearance-title" className="grid grid-cols-3 gap-3 p-5">
+      <div role="radiogroup" aria-labelledby="appearance-title" className="grid grid-cols-3 gap-3 p-5 sm:p-6">
         {THEMES.map(({ value, label, icon: Icon }) => {
           const selected = theme === value;
           return (
@@ -68,15 +73,18 @@ function AppearanceCard() {
               aria-checked={selected}
               onClick={() => setTheme(value)}
               className={cn(
-                "relative flex flex-col items-center gap-2 rounded-xl border p-4 text-sm font-medium transition-colors",
-                "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+                "relative flex flex-col items-center gap-2.5 rounded-xl p-4 text-sm font-medium transition-[background-color,box-shadow,color] duration-200 ease-out",
                 selected
-                  ? "border-primary bg-primary-soft text-primary"
-                  : "border-line text-muted hover:bg-surface-2 hover:text-foreground",
+                  ? "bg-surface text-foreground shadow-md ring-[1.5px] ring-foreground"
+                  : "bg-background/60 text-ink-2 ring-1 ring-line hover:bg-surface hover:text-foreground hover:ring-line-strong",
               )}
             >
-              {selected && <Check className="absolute top-2 right-2 size-4" aria-hidden />}
-              <Icon className="size-5" aria-hidden />
+              {selected && (
+                <span className="absolute top-2 right-2 flex size-4 items-center justify-center rounded-[4px] bg-accent text-white">
+                  <Check className="size-3" strokeWidth={3} aria-hidden />
+                </span>
+              )}
+              <Icon className="size-5" strokeWidth={1.75} aria-hidden />
               {label}
             </button>
           );
@@ -118,7 +126,7 @@ function SettingsForm({ settings, onSaved }: { settings: Settings; onSaved: () =
     <form onSubmit={handleSubmit} className="space-y-6">
       <Card>
         <CardHeader title="Notifications" description="Choose which emails you'd like to receive." />
-        <div className="divide-y divide-line px-5 pt-2 pb-3">
+        <div className="divide-y divide-line px-5 pt-2 pb-3 sm:px-6">
           {NOTIFICATIONS.map(({ key, label, description }) => (
             <Switch
               key={key}
@@ -135,7 +143,7 @@ function SettingsForm({ settings, onSaved }: { settings: Settings; onSaved: () =
 
       <Card>
         <CardHeader title="Region" description="Weekly reports and email digests are sent in this timezone." />
-        <div className="grid gap-4 p-5 sm:grid-cols-2">
+        <div className="grid gap-4 p-5 sm:grid-cols-2 sm:p-6">
           <SelectField
             label="Timezone"
             value={draft.timezone}
@@ -143,7 +151,7 @@ function SettingsForm({ settings, onSaved }: { settings: Settings; onSaved: () =
             onChange={(e) => setDraft((d) => ({ ...d, timezone: e.target.value as Settings["timezone"] }))}
           />
         </div>
-        <div className="flex justify-end gap-2 border-t border-line px-5 py-4">
+        <div className="flex justify-end gap-2 border-t border-line px-5 py-4 sm:px-6">
           <Button variant="secondary" disabled={!dirty || saving} onClick={() => setDraft(settings)}>
             Discard
           </Button>
@@ -178,12 +186,12 @@ function DangerZone({ onReset }: { onReset: () => void }) {
   }
 
   return (
-    <Card className="border-danger/30">
+    <Card className="ring-danger/25">
       <CardHeader title="Demo data" description="All data lives in your browser. Reset it to start fresh." />
-      <div className="flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
         <p className="text-sm text-muted">Restores the original users, profile and settings.</p>
         <Button variant="secondary" onClick={() => setConfirming(true)} className="text-danger">
-          <RotateCcw className="size-4" aria-hidden />
+          <RotateCcw className="size-4" strokeWidth={1.75} aria-hidden />
           Reset demo data
         </Button>
       </div>

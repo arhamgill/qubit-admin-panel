@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useProfile } from "@/components/providers/profile-provider";
 import { useToast } from "@/components/providers/toast-provider";
 import { Avatar } from "@/components/ui/avatar";
+import { Tag } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader } from "@/components/ui/card";
 import { ErrorState, Skeleton } from "@/components/ui/feedback";
@@ -21,13 +22,18 @@ export function ProfileView() {
 
   return (
     <>
-      <PageHeader title="Profile" description="Manage your personal information and account security." />
+      <PageHeader
+        index="03"
+        eyebrow="Account"
+        title="Profile"
+        description="Manage your personal information and account security."
+      />
       {error && !profile ? (
         <ErrorState message={error} onRetry={reload} />
       ) : (
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
           <ProfileSummary profile={profile} loading={isLoading} />
-          <div className="space-y-6 lg:col-span-2">
+          <div className="space-y-5 lg:col-span-2">
             {profile ? (
               <ProfileForm key={JSON.stringify(profile)} profile={profile} onSaved={reload} />
             ) : (
@@ -48,24 +54,24 @@ export function ProfileView() {
 
 function ProfileSummary({ profile, loading }: { profile?: Profile; loading: boolean }) {
   return (
-    <Card className="h-fit p-6">
+    <Card className="h-fit overflow-hidden lg:sticky lg:top-24">
       {loading || !profile ? (
-        <div className="flex flex-col items-center gap-3">
+        <div className="flex flex-col items-center gap-3 p-6">
           <Skeleton className="size-16 rounded-full" />
           <Skeleton className="h-5 w-32" />
           <Skeleton className="h-4 w-24" />
         </div>
       ) : (
         <>
-          <div className="flex flex-col items-center text-center">
-            <Avatar name={profile.name} seed="profile" size="lg" />
-            <p className="mt-3 text-lg font-semibold text-foreground">{profile.name}</p>
+          <div className="flex flex-col items-center border-b border-line bg-background/60 px-6 pt-8 pb-6 text-center">
+            <Avatar name={profile.name} seed="profile" size="lg" className="ring-4 ring-surface" />
+            <p className="mt-4 text-xl font-semibold tracking-[-0.03em] text-foreground">{profile.name}</p>
             <p className="text-sm text-muted">{profile.jobTitle || "Administrator"}</p>
-            <span className="mt-3 rounded-full bg-primary-soft px-2.5 py-0.5 text-xs font-medium text-primary">
-              Workspace owner
-            </span>
+            <div className="mt-3">
+              <Tag tone="accent">Workspace owner</Tag>
+            </div>
           </div>
-          <dl className="mt-6 space-y-3 border-t border-line pt-5 text-sm">
+          <dl className="space-y-3.5 p-6 text-sm">
             {[
               { icon: Mail, label: "Email", value: profile.email },
               { icon: Phone, label: "Phone", value: profile.phone },
@@ -73,13 +79,13 @@ function ProfileSummary({ profile, loading }: { profile?: Profile; loading: bool
               { icon: Briefcase, label: "Job title", value: profile.jobTitle },
             ].map(({ icon: Icon, label, value }) => (
               <div key={label} className="flex items-center gap-3">
-                <Icon className="size-4 shrink-0 text-muted" aria-hidden />
+                <Icon className="size-4 shrink-0 text-muted" strokeWidth={1.75} aria-hidden />
                 <dt className="sr-only">{label}</dt>
                 <dd className="min-w-0 truncate text-foreground">{value || <span className="text-muted">Not set</span>}</dd>
               </div>
             ))}
           </dl>
-          {profile.bio && <p className="mt-5 border-t border-line pt-5 text-sm text-muted">{profile.bio}</p>}
+          {profile.bio && <p className="border-t border-line p-6 text-sm leading-relaxed text-ink-2">{profile.bio}</p>}
         </>
       )}
     </Card>
@@ -123,7 +129,7 @@ function ProfileForm({ profile, onSaved }: { profile: Profile; onSaved: () => vo
   return (
     <Card>
       <CardHeader title="Personal information" description="This is how others see you across the workspace." />
-      <form onSubmit={handleSubmit} noValidate className="space-y-4 p-5">
+      <form onSubmit={handleSubmit} noValidate className="space-y-4 p-5 sm:p-6">
         <div className="grid gap-4 sm:grid-cols-2">
           <TextField
             label="Full name"

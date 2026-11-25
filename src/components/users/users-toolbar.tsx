@@ -39,12 +39,12 @@ export function UsersToolbar({
   onClear,
 }: UsersToolbarProps) {
   return (
-    <div className="flex flex-col gap-3 p-4 md:flex-row md:items-center">
+    <div className="flex flex-col gap-3 p-4 sm:px-5 md:flex-row md:items-center">
       <div className="relative flex-1">
         <label htmlFor="user-search" className="sr-only">
           Search users
         </label>
-        <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted" aria-hidden />
+        <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted" strokeWidth={1.75} aria-hidden />
         <input
           id="user-search"
           type="search"
@@ -53,7 +53,7 @@ export function UsersToolbar({
           placeholder="Search by name, email or location…"
           maxLength={100}
           autoComplete="off"
-          className="h-10 w-full rounded-lg border border-line bg-surface pr-3 pl-9 text-sm text-foreground placeholder:text-muted/70 focus:border-primary focus:ring-2 focus:ring-ring focus:outline-none"
+          className="h-10 w-full rounded-lg bg-surface pr-3 pl-9 text-sm text-foreground shadow-sm ring-1 ring-line-strong ring-inset transition-[box-shadow] duration-200 ease-out placeholder:text-muted/80 hover:ring-muted/60 focus:shadow-[0_0_0_4px_var(--accent-soft)] focus:ring-[1.5px] focus:ring-accent focus:outline-none"
         />
       </div>
       <div className="grid grid-cols-2 gap-3 md:flex md:items-center">

@@ -24,6 +24,8 @@ function formatPointDate(point: RevenuePoint, range: RevenueRange) {
   return range === "12m" ? monthlyTooltip.format(date) : dailyTooltip.format(date);
 }
 
+const AXIS_TICK = { fill: "var(--muted)", fontSize: 11, fontFamily: "var(--font-geist-mono)" };
+
 export function RevenueChart() {
   const [range, setRange] = useState<RevenueRange>("30d");
   const [view, setView] = useState<"chart" | "table">("chart");
@@ -35,13 +37,13 @@ export function RevenueChart() {
   const rangeMeta = RANGES.find((r) => r.value === range)!;
 
   return (
-    <Card className="flex flex-col">
+    <Card className="flex h-full flex-col">
       <CardHeader
         title="Revenue"
         description={`${rangeMeta.long}, compared with the period before`}
         action={
           <div className="flex items-center gap-2">
-            <div role="group" aria-label="Time range" className="inline-flex rounded-lg border border-line bg-surface-2 p-0.5">
+            <div role="group" aria-label="Time range" className="inline-flex rounded-lg bg-surface-2 p-0.5 ring-1 ring-line ring-inset">
               {RANGES.map((r) => (
                 <button
                   key={r.value}
@@ -50,8 +52,10 @@ export function RevenueChart() {
                   aria-pressed={range === r.value}
                   aria-label={r.long}
                   className={cn(
-                    "rounded-md px-2.5 py-1 text-xs font-medium transition-colors focus-visible:outline-2 focus-visible:outline-ring",
-                    range === r.value ? "bg-surface text-foreground shadow-sm" : "text-muted hover:text-foreground",
+                    "h-7 rounded-md px-2.5 font-mono text-[11px] font-medium tracking-[0.04em] transition-[background-color,color,box-shadow] duration-200 ease-out",
+                    range === r.value
+                      ? "bg-surface text-foreground shadow-sm ring-1 ring-line"
+                      : "text-muted hover:text-foreground",
                   )}
                 >
                   {r.label}
@@ -63,93 +67,118 @@ export function RevenueChart() {
               onClick={() => setView(view === "chart" ? "table" : "chart")}
               aria-label={view === "chart" ? "Show data as table" : "Show data as chart"}
               title={view === "chart" ? "Show as table" : "Show as chart"}
-              className="rounded-lg border border-line p-1.5 text-muted hover:bg-surface-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring"
+              className="flex size-8 items-center justify-center rounded-lg text-ink-2 ring-1 ring-line-strong ring-inset transition-colors duration-200 hover:bg-foreground/5 hover:text-foreground"
             >
-              {view === "chart" ? <Table2 className="size-4" aria-hidden /> : <BarChart3 className="size-4" aria-hidden />}
+              {view === "chart" ? (
+                <Table2 className="size-4" strokeWidth={1.75} aria-hidden />
+              ) : (
+                <BarChart3 className="size-4" strokeWidth={1.75} aria-hidden />
+              )}
             </button>
           </div>
         }
       />
 
-      <div className="px-5 pt-4">
+      <div className="px-5 pt-5 sm:px-6">
         {isInitialLoading ? (
-          <Skeleton className="h-9 w-40" />
+          <Skeleton className="h-10 w-48" />
         ) : data ? (
           <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1" aria-live="polite">
-            <p className="text-3xl font-semibold tracking-tight text-foreground tabular-nums">
+            <p className="text-[2.5rem] leading-none font-semibold tracking-[-0.05em] text-foreground tabular-nums">
               {formatCurrency(data.total)}
             </p>
             {change !== null && (
-              <p className={cn("text-sm font-medium tabular-nums", change >= 0 ? "text-success" : "text-danger")}>
-                {change >= 0 ? "+" : "−"}
-                {Math.abs(change).toFixed(1)}%{" "}
-                <span className="font-normal text-muted">vs previous period</span>
+              <p className="flex items-center gap-2 text-[13px] text-muted">
+                <span
+                  className={cn(
+                    "inline-flex h-5 items-center rounded px-1.5 font-mono text-[11px] font-semibold tabular-nums",
+                    change >= 0 ? "bg-success-soft text-success" : "bg-danger-soft text-danger",
+                  )}
+                >
+                  {change >= 0 ? "+" : "−"}
+                  {Math.abs(change).toFixed(1)}%
+                </span>
+                vs previous period
               </p>
             )}
           </div>
         ) : null}
       </div>
 
-      <div className={cn("relative px-2 pt-4 pb-4 transition-opacity sm:px-3", isLoading && data && "opacity-60")}>
+      <div className={cn("relative flex-1 px-2 pt-5 pb-4 transition-opacity duration-300 sm:px-3", isLoading && data && "opacity-50")}>
         {error && !data ? (
           <ErrorState message={error} onRetry={reload} />
         ) : isInitialLoading || !data ? (
           <Skeleton className="mx-3 h-72" />
         ) : view === "table" ? (
-          <div className="mx-3 max-h-72 overflow-auto rounded-lg border border-line">
+          <div className="mx-3 max-h-72 overflow-auto rounded-xl ring-1 ring-line">
             <table className="w-full text-sm">
               <caption className="sr-only">Revenue, {rangeMeta.long.toLowerCase()}</caption>
-              <thead className="sticky top-0 bg-surface-2 text-left text-xs text-muted uppercase">
+              <thead className="sticky top-0 bg-surface-2 text-left">
                 <tr>
-                  <th scope="col" className="px-3 py-2 font-medium">
+                  <th scope="col" className="eyebrow px-3 py-2.5 font-medium">
                     {range === "12m" ? "Month" : "Date"}
                   </th>
-                  <th scope="col" className="px-3 py-2 text-right font-medium">
+                  <th scope="col" className="eyebrow px-3 py-2.5 text-right font-medium">
                     Revenue
                   </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-line">
                 {data.points.map((p) => (
-                  <tr key={p.date}>
-                    <td className="px-3 py-2 text-foreground">{formatPointDate(p, range)}</td>
-                    <td className="px-3 py-2 text-right text-foreground tabular-nums">{formatCurrency(p.revenue)}</td>
+                  <tr key={p.date} className="hover:bg-background">
+                    <td className="px-3 py-2 text-ink-2">{formatPointDate(p, range)}</td>
+                    <td className="px-3 py-2 text-right font-mono text-[13px] text-foreground tabular-nums">
+                      {formatCurrency(p.revenue)}
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
         ) : (
-          <div className="h-72" role="img" aria-label={`Revenue chart, ${rangeMeta.long.toLowerCase()}. Total ${formatCurrency(data.total)}. Use the table view for exact values.`}>
+          <div
+            className="h-72"
+            role="img"
+            aria-label={`Revenue chart, ${rangeMeta.long.toLowerCase()}. Total ${formatCurrency(data.total)}. Use the table view for exact values.`}
+          >
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={data.points} margin={{ top: 8, right: 12, left: 4, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="revenue-fill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="var(--chart-1)" stopOpacity={0.22} />
+                    <stop offset="100%" stopColor="var(--chart-1)" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
                 <CartesianGrid vertical={false} stroke="var(--chart-grid)" strokeWidth={1} />
                 <XAxis
                   dataKey="label"
                   tickLine={false}
                   axisLine={false}
-                  tick={{ fill: "var(--muted)", fontSize: 12 }}
-                  tickMargin={8}
-                  minTickGap={20}
+                  tick={AXIS_TICK}
+                  tickMargin={10}
+                  minTickGap={24}
                   interval="preserveStartEnd"
                 />
                 <YAxis
                   tickLine={false}
                   axisLine={false}
-                  tick={{ fill: "var(--muted)", fontSize: 12 }}
+                  tick={AXIS_TICK}
                   tickFormatter={(v: number) => formatCompactCurrency(v)}
                   width={56}
                 />
                 <Tooltip
-                  cursor={{ stroke: "var(--muted)", strokeWidth: 1, strokeOpacity: 0.4 }}
+                  cursor={{ stroke: "var(--line-strong)", strokeWidth: 1 }}
                   content={({ active, payload }) => {
                     if (!active || !payload?.length) return null;
                     const point = payload[0].payload as RevenuePoint;
                     return (
-                      <div className="rounded-lg border border-line bg-surface px-3 py-2 text-sm shadow-lg">
-                        <p className="text-xs text-muted">{formatPointDate(point, range)}</p>
-                        <p className="mt-0.5 flex items-center gap-2 font-semibold text-foreground tabular-nums">
-                          <span className="size-2 rounded-full bg-chart-1" aria-hidden />
+                      <div className="rounded-lg bg-panel px-3 py-2 text-panel-foreground shadow-lg ring-1 ring-white/5">
+                        <p className="font-mono text-[10.5px] tracking-[0.04em] text-panel-muted uppercase">
+                          {formatPointDate(point, range)}
+                        </p>
+                        <p className="mt-1 flex items-center gap-2 text-sm font-semibold tabular-nums">
+                          <span className="size-2 rounded-[2px] bg-chart-1" aria-hidden />
                           {formatCurrency(point.revenue)}
                         </p>
                       </div>
@@ -164,9 +193,8 @@ export function RevenueChart() {
                   strokeWidth={2}
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  fill="var(--chart-1)"
-                  fillOpacity={0.1}
-                  activeDot={{ r: 5, stroke: "var(--surface)", strokeWidth: 2, fill: "var(--chart-1)" }}
+                  fill="url(#revenue-fill)"
+                  activeDot={{ r: 4.5, stroke: "var(--surface)", strokeWidth: 2, fill: "var(--chart-1)" }}
                   dot={false}
                   isAnimationActive={false}
                 />

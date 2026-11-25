@@ -72,7 +72,7 @@ export function PasswordForm() {
           </Button>
         }
       />
-      <form onSubmit={handleSubmit} noValidate className="space-y-4 p-5">
+      <form onSubmit={handleSubmit} noValidate className="space-y-4 p-5 sm:p-6">
         {/* Hidden username field helps password managers associate the credentials correctly. */}
         <input type="text" name="username" autoComplete="username" hidden readOnly value="" />
         <TextField
@@ -105,7 +105,7 @@ export function PasswordForm() {
           />
         </div>
         <div className="flex flex-col gap-3 border-t border-line pt-4 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-xs text-muted">Demo mode: passwords are validated but never stored.</p>
+          <p className="eyebrow">Demo · passwords are never stored</p>
           <Button type="submit" loading={saving}>
             Update password
           </Button>

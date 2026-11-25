@@ -1,23 +1,18 @@
 "use client";
 
-import { Hexagon, PanelLeftClose, PanelLeftOpen, X } from "lucide-react";
+import { PanelLeftClose, PanelLeftOpen, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
+import { LogoMark, Wordmark } from "./logo";
 import { isActivePath, NAV_SECTIONS } from "./nav-items";
 
 function Brand({ collapsed }: { collapsed?: boolean }) {
   return (
-    <Link
-      href="/"
-      className="flex items-center gap-2.5 rounded-lg focus-visible:outline-2 focus-visible:outline-ring"
-      aria-label="Qubit Admin home"
-    >
-      <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-        <Hexagon className="size-5" aria-hidden />
-      </span>
-      {!collapsed && <span className="text-base font-semibold tracking-tight text-foreground">Qubit Admin</span>}
+    <Link href="/" className="flex items-center gap-2.5 rounded-md text-foreground" aria-label="Qubit Admin home">
+      <LogoMark />
+      {!collapsed && <Wordmark />}
     </Link>
   );
 }
@@ -25,15 +20,18 @@ function Brand({ collapsed }: { collapsed?: boolean }) {
 function NavLinks({ collapsed, onNavigate }: { collapsed?: boolean; onNavigate?: () => void }) {
   const pathname = usePathname();
   return (
-    <nav aria-label="Main" className="flex-1 space-y-6 overflow-y-auto px-3 py-4">
-      {NAV_SECTIONS.map((section) => (
+    <nav aria-label="Main" className="flex-1 space-y-7 overflow-y-auto px-3 py-5">
+      {NAV_SECTIONS.map((section, sectionIndex) => (
         <div key={section.title}>
           {collapsed ? (
-            <div className="mx-auto mb-2 h-px w-6 bg-line" aria-hidden />
+            <div className="mx-auto mb-3 h-px w-6 bg-line-strong" aria-hidden />
           ) : (
-            <p className="mb-2 px-3 text-xs font-medium tracking-wide text-muted uppercase">{section.title}</p>
+            <p className="eyebrow mb-2.5 flex items-center gap-2 px-3">
+              <span className="text-accent-text">{String(sectionIndex + 1).padStart(2, "0")}</span>
+              {section.title}
+            </p>
           )}
-          <ul className="space-y-1">
+          <ul className="space-y-0.5">
             {section.items.map((item) => {
               const active = isActivePath(pathname, item.href);
               const Icon = item.icon;
@@ -45,16 +43,24 @@ function NavLinks({ collapsed, onNavigate }: { collapsed?: boolean; onNavigate?:
                     aria-current={active ? "page" : undefined}
                     title={collapsed ? item.label : undefined}
                     className={cn(
-                      "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                      "focus-visible:outline-2 focus-visible:outline-ring",
+                      "group relative flex h-9 items-center gap-3 rounded-lg px-3 text-sm font-medium transition-[background-color,color,box-shadow] duration-200 ease-out",
                       collapsed && "justify-center px-0",
                       active
-                        ? "bg-primary-soft text-primary"
-                        : "text-muted hover:bg-surface-2 hover:text-foreground",
+                        ? "bg-surface text-foreground shadow-sm ring-1 ring-line"
+                        : "text-ink-2 hover:bg-foreground/5 hover:text-foreground",
                     )}
                   >
-                    <Icon className="size-5 shrink-0" aria-hidden />
+                    <Icon className="size-[18px] shrink-0" strokeWidth={1.75} aria-hidden />
                     <span className={cn(collapsed && "sr-only")}>{item.label}</span>
+                    {/* Active indicator: the landing page's 4px orange square. */}
+                    <span
+                      aria-hidden
+                      className={cn(
+                        "absolute size-1 rounded-[1px] bg-accent transition-transform duration-300 ease-out",
+                        collapsed ? "bottom-1 left-1/2 -translate-x-1/2" : "top-1/2 right-3 -translate-y-1/2",
+                        active ? "scale-100" : "scale-0",
+                      )}
+                    />
                   </Link>
                 </li>
               );
@@ -63,6 +69,18 @@ function NavLinks({ collapsed, onNavigate }: { collapsed?: boolean; onNavigate?:
         </div>
       ))}
     </nav>
+  );
+}
+
+function DemoNotice() {
+  return (
+    <div className="mx-3 mb-3 rounded-xl bg-surface p-3 ring-1 ring-line">
+      <p className="eyebrow flex items-center gap-2 text-ink-2">
+        <span className="size-1.5 animate-[pulse-dot_2s_ease-in-out_infinite] rounded-full bg-success-dot" aria-hidden />
+        Demo workspace
+      </p>
+      <p className="mt-1.5 text-xs leading-relaxed text-muted">Data is stored in this browser. Reset it from Settings.</p>
+    </div>
   );
 }
 
@@ -75,14 +93,15 @@ export function DesktopSidebar({ collapsed, onToggle }: DesktopSidebarProps) {
   return (
     <aside
       className={cn(
-        "sticky top-0 hidden h-dvh shrink-0 flex-col border-r border-line bg-surface transition-[width] duration-200 lg:flex",
-        collapsed ? "w-[76px]" : "w-64",
+        "sticky top-0 hidden h-dvh shrink-0 flex-col border-r border-line bg-background transition-[width] duration-300 ease-out lg:flex",
+        collapsed ? "w-[72px]" : "w-64",
       )}
     >
-      <div className={cn("flex h-16 items-center border-b border-line px-5", collapsed && "justify-center px-0")}>
+      <div className={cn("flex h-16 items-center px-6", collapsed && "justify-center px-0")}>
         <Brand collapsed={collapsed} />
       </div>
       <NavLinks collapsed={collapsed} />
+      {!collapsed && <DemoNotice />}
       <div className="border-t border-line p-3">
         <button
           type="button"
@@ -90,16 +109,15 @@ export function DesktopSidebar({ collapsed, onToggle }: DesktopSidebarProps) {
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           aria-expanded={!collapsed}
           className={cn(
-            "flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-muted transition-colors hover:bg-surface-2 hover:text-foreground",
-            "focus-visible:outline-2 focus-visible:outline-ring",
+            "flex h-9 w-full items-center gap-3 rounded-lg px-3 text-sm font-medium text-muted transition-colors duration-200 hover:bg-foreground/5 hover:text-foreground",
             collapsed && "justify-center px-0",
           )}
         >
           {collapsed ? (
-            <PanelLeftOpen className="size-5" aria-hidden />
+            <PanelLeftOpen className="size-[18px]" strokeWidth={1.75} aria-hidden />
           ) : (
             <>
-              <PanelLeftClose className="size-5" aria-hidden />
+              <PanelLeftClose className="size-[18px]" strokeWidth={1.75} aria-hidden />
               <span>Collapse</span>
             </>
           )}
@@ -140,7 +158,7 @@ export function MobileSidebar({ open, onClose }: MobileSidebarProps) {
       aria-label="Navigation"
       onClose={() => open && onClose()}
       onClick={(event) => event.target === event.currentTarget && onClose()}
-      className="m-0 h-dvh max-h-none w-72 max-w-[85vw] border-r border-line bg-surface p-0 text-foreground open:animate-[drawer-in_180ms_ease-out] lg:hidden"
+      className="m-0 h-dvh max-h-none w-72 max-w-[85vw] bg-background p-0 text-foreground shadow-lg ring-1 ring-line open:animate-[drawer-in_280ms_var(--ease-out)] lg:hidden"
     >
       <div className="flex h-full flex-col">
         <div className="flex h-16 items-center justify-between border-b border-line px-5">
@@ -149,12 +167,13 @@ export function MobileSidebar({ open, onClose }: MobileSidebarProps) {
             type="button"
             onClick={onClose}
             aria-label="Close navigation"
-            className="-mr-2 rounded-lg p-2 text-muted hover:bg-surface-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring"
+            className="-mr-2 rounded-lg p-2 text-muted hover:bg-foreground/5 hover:text-foreground"
           >
-            <X className="size-5" aria-hidden />
+            <X className="size-5" strokeWidth={1.75} aria-hidden />
           </button>
         </div>
         <NavLinks onNavigate={onClose} />
+        <DemoNotice />
       </div>
     </dialog>
   );

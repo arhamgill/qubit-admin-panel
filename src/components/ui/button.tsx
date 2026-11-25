@@ -2,14 +2,15 @@ import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const VARIANTS = {
-  primary: "bg-primary text-primary-foreground hover:bg-primary-hover shadow-sm",
-  secondary: "border border-line bg-surface text-foreground hover:bg-surface-2 shadow-sm",
-  ghost: "text-muted hover:bg-surface-2 hover:text-foreground",
-  danger: "bg-danger text-white hover:bg-danger-hover shadow-sm dark:text-[#1a0a0a]",
+  primary: "bg-primary text-primary-foreground shadow-btn hover:bg-primary-hover hover:shadow-btn-hover",
+  secondary:
+    "bg-surface text-foreground shadow-sm ring-1 ring-line-strong ring-inset hover:ring-muted hover:shadow-md",
+  ghost: "text-ink-2 hover:bg-foreground/5 hover:text-foreground",
+  danger: "bg-danger-solid text-white shadow-sm hover:bg-danger-hover",
 } as const;
 
 const SIZES = {
-  sm: "h-8 gap-1.5 px-3 text-sm",
+  sm: "h-8 gap-1.5 px-3 text-[13px]",
   md: "h-10 gap-2 px-4 text-sm",
   icon: "size-9 justify-center",
 } as const;
@@ -37,9 +38,9 @@ export function Button({
       disabled={disabled || loading}
       aria-busy={loading || undefined}
       className={cn(
-        "inline-flex shrink-0 items-center justify-center rounded-lg font-medium whitespace-nowrap transition-colors",
-        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
-        "disabled:pointer-events-none disabled:opacity-60",
+        "inline-flex shrink-0 items-center justify-center rounded-lg font-medium tracking-[-0.01em] whitespace-nowrap",
+        "transition-[background-color,box-shadow,color,transform] duration-200 ease-out active:scale-[0.98]",
+        "disabled:pointer-events-none disabled:opacity-50",
         VARIANTS[variant],
         SIZES[size],
         className,

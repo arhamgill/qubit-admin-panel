@@ -8,7 +8,7 @@ import { getDashboardStats } from "@/lib/api/analytics";
 import { formatCurrency, formatNumber, percentChange } from "@/lib/utils";
 import { RecentUsers } from "./recent-users";
 import { RevenueChart } from "./revenue-chart";
-import { StatCard } from "./stat-card";
+import { StatCard, StatGrid } from "./stat-card";
 import { UserBreakdown } from "./user-breakdown";
 
 export function DashboardView() {
@@ -21,15 +21,20 @@ export function DashboardView() {
 
   return (
     <>
-      <PageHeader title="Dashboard" description="An overview of revenue and user activity across your workspace." />
+      <PageHeader
+        index="01"
+        eyebrow="Overview"
+        title="Dashboard"
+        description="Revenue and user activity across your workspace, at a glance."
+      />
 
       {error && !stats ? (
         <ErrorState message={error} onRetry={reload} />
       ) : (
-        <div className="space-y-6">
-          <section aria-label="Key metrics" className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="space-y-5">
+          <StatGrid label="Key metrics">
             <StatCard
-              label="Revenue (30 days)"
+              label="Revenue · 30d"
               icon={<DollarSign className="size-4" />}
               loading={isInitialLoading}
               value={stats && formatCurrency(stats.revenue30d)}
@@ -53,7 +58,7 @@ export function DashboardView() {
               hint={stats ? `${Math.round((stats.activeUsers / Math.max(stats.totalUsers, 1)) * 100)}% of all users` : undefined}
             />
             <StatCard
-              label="New sign-ups (30 days)"
+              label="New sign-ups · 30d"
               icon={<UserPlus className="size-4" />}
               loading={isInitialLoading}
               value={stats && formatNumber(stats.newSignups30d)}
@@ -61,9 +66,9 @@ export function DashboardView() {
               deltaLabel="vs previous 30 days"
               hint="No sign-ups in the previous period"
             />
-          </section>
+          </StatGrid>
 
-          <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
+          <div className="grid grid-cols-1 gap-5 xl:grid-cols-3">
             <div className="xl:col-span-2">
               <RevenueChart />
             </div>

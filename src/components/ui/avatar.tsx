@@ -18,7 +18,7 @@ export function Avatar({ name, seed, size = "sm", className }: AvatarProps) {
     <span
       aria-hidden
       className={cn(
-        "inline-flex shrink-0 items-center justify-center rounded-full font-semibold select-none",
+        "inline-flex shrink-0 items-center justify-center rounded-full font-semibold tracking-[-0.02em] select-none",
         avatarTone(seed ?? name),
         SIZES[size],
         className,

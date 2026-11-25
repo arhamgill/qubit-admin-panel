@@ -15,25 +15,27 @@ interface EmptyStateProps {
 
 export function EmptyState({ icon, title, description, action }: EmptyStateProps) {
   return (
-    <div className="flex flex-col items-center justify-center px-6 py-14 text-center">
-      <div className="mb-3 rounded-full bg-surface-2 p-3 text-muted">{icon}</div>
-      <p className="text-sm font-semibold text-foreground">{title}</p>
+    <div className="flex flex-col items-center justify-center px-6 py-16 text-center">
+      <div className="mb-4 flex size-11 items-center justify-center rounded-xl bg-background text-ink-2 ring-1 ring-line ring-inset">
+        {icon}
+      </div>
+      <p className="text-[15px] font-semibold tracking-[-0.015em] text-foreground">{title}</p>
       {description && <p className="mt-1 max-w-sm text-sm text-muted">{description}</p>}
-      {action && <div className="mt-4">{action}</div>}
+      {action && <div className="mt-5">{action}</div>}
     </div>
   );
 }
 
 export function ErrorState({ message, onRetry }: { message: string; onRetry?: () => void }) {
   return (
-    <div role="alert" className="flex flex-col items-center justify-center px-6 py-12 text-center">
-      <div className="mb-3 rounded-full bg-danger-soft p-3 text-danger">
-        <AlertTriangle className="size-5" aria-hidden />
+    <div role="alert" className="flex flex-col items-center justify-center px-6 py-14 text-center">
+      <div className="mb-4 flex size-11 items-center justify-center rounded-xl bg-danger-soft text-danger">
+        <AlertTriangle className="size-5" strokeWidth={1.75} aria-hidden />
       </div>
-      <p className="text-sm font-semibold text-foreground">Couldn&apos;t load data</p>
+      <p className="text-[15px] font-semibold text-foreground">Couldn&apos;t load data</p>
       <p className="mt-1 max-w-sm text-sm text-muted">{message}</p>
       {onRetry && (
-        <Button variant="secondary" size="sm" className="mt-4" onClick={onRetry}>
+        <Button variant="secondary" size="sm" className="mt-5" onClick={onRetry}>
           Try again
         </Button>
       )}

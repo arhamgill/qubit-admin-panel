@@ -11,7 +11,7 @@ export default function UsersPage() {
     // UsersView reads the URL search params, which requires a Suspense boundary.
     <Suspense
       fallback={
-        <Card className="mt-20 overflow-hidden">
+        <Card className="mt-32 overflow-hidden">
           <UsersTableSkeleton />
         </Card>
       }

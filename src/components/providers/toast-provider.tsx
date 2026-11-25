@@ -19,10 +19,11 @@ interface ToastContextValue {
 
 const ToastContext = createContext<ToastContextValue | null>(null);
 
+// Toasts use the dark "product panel" surface, so the status colours are the on-dark shades.
 const ICONS = {
-  success: <CheckCircle2 className="size-5 text-success" aria-hidden />,
-  error: <XCircle className="size-5 text-danger" aria-hidden />,
-  info: <Info className="size-5 text-primary" aria-hidden />,
+  success: <CheckCircle2 className="size-[18px] text-[#5fd394]" strokeWidth={2} aria-hidden />,
+  error: <XCircle className="size-[18px] text-[#ff8a7a]" strokeWidth={2} aria-hidden />,
+  info: <Info className="size-[18px] text-accent" strokeWidth={2} aria-hidden />,
 };
 
 const DURATION_MS = 4500;
@@ -72,19 +73,19 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
             key={t.id}
             role={t.variant === "error" ? "alert" : "status"}
             className={cn(
-              "pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-xl border border-line bg-surface p-4 shadow-lg",
-              "animate-[toast-in_180ms_ease-out]",
+              "pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-xl bg-panel p-3.5 pr-3 text-panel-foreground shadow-lg ring-1 ring-white/5",
+              "animate-[toast-in_320ms_var(--ease-out)]",
             )}
           >
-            {ICONS[t.variant]}
+            <span className="mt-px">{ICONS[t.variant]}</span>
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-medium text-foreground">{t.title}</p>
-              {t.description && <p className="mt-0.5 text-sm text-muted">{t.description}</p>}
+              <p className="text-sm font-medium tracking-[-0.01em]">{t.title}</p>
+              {t.description && <p className="mt-0.5 text-[13px] text-panel-muted">{t.description}</p>}
             </div>
             <button
               type="button"
               onClick={() => dismiss(t.id)}
-              className="-m-1 rounded-md p-1 text-muted hover:bg-surface-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring"
+              className="-m-0.5 rounded-md p-1 text-panel-muted transition-colors hover:bg-white/10 hover:text-panel-foreground"
               aria-label="Dismiss notification"
             >
               <X className="size-4" aria-hidden />

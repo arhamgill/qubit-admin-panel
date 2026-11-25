@@ -65,6 +65,18 @@ src/
 └── proxy.ts                  # Per-request CSP nonce (Next.js 16 "proxy", formerly middleware)
 ```
 
+## Visual design
+
+The UI shares its design system with the Qubit landing page, so the product and the marketing site feel like one brand:
+
+- **Warm paper and ink neutrals** (`#f5f3ee` / `#141413`) with hairline borders drawn as 1px shadow rings, and soft shadows tinted with ink.
+- **One signal-orange accent** (`#ef5a1f`), used sparingly: the logo square, the active-nav indicator, section numbers, the revenue line and focus rings. Primary buttons are ink, not orange.
+- **Geist and Geist Mono.** Headings and figures use tight negative tracking. Mono uppercase labels ("01 —— OVERVIEW"), tags, dates and numbers give it a spec-sheet feel.
+- **Dark "product panels"** (tooltips, toasts, the active-accounts highlight) act as the contrast element. Dark mode is built from the same panel scale.
+- **Quiet motion** using the shared `cubic-bezier(0.22, 1, 0.36, 1)` easing: a short content rise on page load, an orange rule that draws across stat cells on hover, and a pressed state on buttons. All of it respects `prefers-reduced-motion`.
+
+All tokens live as CSS custom properties in `src/app/globals.css` and are exposed to Tailwind through `@theme`.
+
 ## Design decisions
 
 **Mock API instead of a database.** Every function in `src/lib/api` is `async`, adds realistic latency and throws a typed `ApiError` (with optional per-field errors), just like a real HTTP client. The UI only talks to this layer, so swapping in real `fetch` calls later doesn't touch any component. Data is persisted in `localStorage`, so changes survive a refresh; **Settings → Reset demo data** restores the seed.

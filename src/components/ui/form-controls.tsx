@@ -5,11 +5,13 @@ import { useId } from "react";
 import { cn } from "@/lib/utils";
 
 const controlBase =
-  "w-full rounded-lg border bg-surface text-sm text-foreground placeholder:text-muted/70 transition-colors " +
-  "focus:outline-none focus:ring-2 focus:ring-ring focus:border-primary disabled:opacity-60";
+  "w-full rounded-lg bg-surface text-sm text-foreground shadow-sm ring-1 ring-inset placeholder:text-muted/80 " +
+  "transition-[box-shadow] duration-200 ease-out focus:outline-none focus:ring-[1.5px] disabled:opacity-60";
 
 function controlState(invalid: boolean) {
-  return invalid ? "border-danger focus:ring-danger/30 focus:border-danger" : "border-line";
+  return invalid
+    ? "ring-danger focus:ring-danger focus:shadow-[0_0_0_4px_var(--danger-soft)]"
+    : "ring-line-strong hover:ring-muted/60 focus:ring-accent focus:shadow-[0_0_0_4px_var(--accent-soft)]";
 }
 
 interface FieldWrapperProps {
@@ -26,10 +28,10 @@ interface FieldWrapperProps {
 function FieldWrapper({ id, label, error, hint, required, hideLabel, className, children }: FieldWrapperProps) {
   return (
     <div className={cn("space-y-1.5", className)}>
-      <label htmlFor={id} className={cn("block text-sm font-medium text-foreground", hideLabel && "sr-only")}>
+      <label htmlFor={id} className={cn("block text-[13px] font-medium text-foreground", hideLabel && "sr-only")}>
         {label}
         {required && (
-          <span className="text-danger" aria-hidden>
+          <span className="text-accent-text" aria-hidden>
             {" "}
             *
           </span>
@@ -37,7 +39,7 @@ function FieldWrapper({ id, label, error, hint, required, hideLabel, className, 
       </label>
       {children}
       {error ? (
-        <p id={`${id}-error`} className="text-xs text-danger">
+        <p id={`${id}-error`} className="text-xs font-medium text-danger">
           {error}
         </p>
       ) : hint ? (
@@ -187,16 +189,15 @@ export function Switch({ checked, onChange, label, description, disabled }: Swit
         disabled={disabled}
         onClick={() => onChange(!checked)}
         className={cn(
-          "relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors",
-          "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:opacity-60",
-          checked ? "bg-primary" : "bg-line",
+          "relative inline-flex h-6 w-10 shrink-0 items-center rounded-full transition-colors duration-200 ease-out disabled:opacity-60",
+          checked ? "bg-primary" : "bg-line-strong",
         )}
       >
         <span
           aria-hidden
           className={cn(
-            "inline-block size-5 rounded-full bg-white shadow transition-transform",
-            checked ? "translate-x-[22px]" : "translate-x-0.5",
+            "inline-block size-5 rounded-full bg-surface shadow-sm transition-transform duration-300 ease-out",
+            checked ? "translate-x-[18px]" : "translate-x-0.5",
           )}
         />
       </button>

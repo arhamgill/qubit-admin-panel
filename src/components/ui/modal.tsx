@@ -58,16 +58,16 @@ export function Modal({ open, onClose, title, description, children, preventClos
         pointerDownOnBackdrop.current = false;
       }}
       className={cn(
-        "m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] overflow-y-auto rounded-2xl border border-line bg-surface p-0 text-foreground shadow-2xl",
-        "open:animate-[dialog-in_160ms_ease-out]",
+        "m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] overflow-y-auto rounded-2xl bg-surface p-0 text-foreground shadow-lg ring-1 ring-line",
+        "open:animate-[dialog-in_260ms_var(--ease-out)]",
         size === "sm" ? "max-w-md" : "max-w-lg",
       )}
     >
       {open && (
-        <div className="p-5 sm:p-6">
+        <div className="p-6 sm:p-7">
           <div className="mb-5 flex items-start justify-between gap-4">
             <div>
-              <h2 id={titleId} className="text-lg font-semibold">
+              <h2 id={titleId} className="text-xl font-semibold tracking-[-0.03em]">
                 {title}
               </h2>
               {description && (
@@ -80,7 +80,7 @@ export function Modal({ open, onClose, title, description, children, preventClos
               type="button"
               onClick={onClose}
               disabled={preventClose}
-              className="-m-1.5 rounded-lg p-1.5 text-muted hover:bg-surface-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring disabled:opacity-50"
+              className="-m-1.5 rounded-lg p-1.5 text-muted transition-colors hover:bg-foreground/5 hover:text-foreground disabled:opacity-50"
               aria-label="Close dialog"
             >
               <X className="size-5" aria-hidden />

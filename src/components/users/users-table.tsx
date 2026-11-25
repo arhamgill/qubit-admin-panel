@@ -38,18 +38,18 @@ function SortHeader({
     <th
       scope="col"
       aria-sort={active ? (dir === "asc" ? "ascending" : "descending") : "none"}
-      className={cn("px-4 py-3 font-medium", className)}
+      className={cn("px-4 py-2.5 font-medium first:pl-5 sm:first:pl-6", className)}
     >
       <button
         type="button"
         onClick={() => onSort(field)}
         className={cn(
-          "-mx-1 inline-flex items-center gap-1 rounded px-1 uppercase hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring",
+          "eyebrow -mx-1 inline-flex items-center gap-1 rounded px-1 transition-colors hover:text-foreground",
           active && "text-foreground",
         )}
       >
         {label}
-        <Icon className={cn("size-3.5", !active && "opacity-50")} aria-hidden />
+        <Icon className={cn("size-3", active ? "text-accent-text" : "opacity-40")} strokeWidth={2.25} aria-hidden />
         <span className="sr-only">, sort {active && dir === "asc" ? "descending" : "ascending"}</span>
       </button>
     </th>
@@ -64,18 +64,18 @@ function RowActions({ user, onEdit, onDelete }: { user: User; onEdit: (u: User) 
         onClick={() => onEdit(user)}
         aria-label={`Edit ${user.name}`}
         title="Edit"
-        className="rounded-lg p-2 text-muted hover:bg-surface-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring"
+        className="rounded-lg p-2 text-muted transition-colors duration-200 hover:bg-foreground/5 hover:text-foreground"
       >
-        <Pencil className="size-4" aria-hidden />
+        <Pencil className="size-4" strokeWidth={1.75} aria-hidden />
       </button>
       <button
         type="button"
         onClick={() => onDelete(user)}
         aria-label={`Delete ${user.name}`}
         title="Delete"
-        className="rounded-lg p-2 text-muted hover:bg-danger-soft hover:text-danger focus-visible:outline-2 focus-visible:outline-ring"
+        className="rounded-lg p-2 text-muted transition-colors duration-200 hover:bg-danger-soft hover:text-danger"
       >
-        <Trash2 className="size-4" aria-hidden />
+        <Trash2 className="size-4" strokeWidth={1.75} aria-hidden />
       </button>
     </div>
   );
@@ -101,37 +101,37 @@ export function UsersTableSkeleton({ rows = 6 }: { rows?: number }) {
 
 export function UsersTable({ users, loading, sort, dir, onSort, onEdit, onDelete }: UsersTableProps) {
   return (
-    <div className={cn("transition-opacity", loading && "pointer-events-none opacity-60")} aria-busy={loading}>
+    <div className={cn("transition-opacity duration-300", loading && "pointer-events-none opacity-50")} aria-busy={loading}>
       {/* Desktop / tablet: table */}
       <div className="hidden overflow-x-auto md:block">
         <table className="w-full text-sm">
           <caption className="sr-only">Users</caption>
-          <thead className="border-y border-line bg-surface-2/60 text-left text-xs text-muted">
+          <thead className="border-y border-line bg-background/70 text-left">
             <tr>
               <SortHeader field="name" label="User" sort={sort} dir={dir} onSort={onSort} />
               <SortHeader field="role" label="Role" sort={sort} dir={dir} onSort={onSort} />
               <SortHeader field="status" label="Status" sort={sort} dir={dir} onSort={onSort} />
-              <th scope="col" className="hidden px-4 py-3 font-medium uppercase lg:table-cell">
+              <th scope="col" className="eyebrow hidden px-4 py-2.5 lg:table-cell">
                 Location
               </th>
               <SortHeader field="joinedAt" label="Joined" sort={sort} dir={dir} onSort={onSort} />
-              <th scope="col" className="hidden px-4 py-3 font-medium uppercase xl:table-cell">
+              <th scope="col" className="eyebrow hidden px-4 py-2.5 xl:table-cell">
                 Last active
               </th>
-              <th scope="col" className="px-4 py-3 text-right font-medium uppercase">
+              <th scope="col" className="px-4 py-2.5 text-right">
                 <span className="sr-only">Actions</span>
               </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-line">
             {users.map((user) => (
-              <tr key={user.id} className="hover:bg-surface-2/50">
-                <td className="px-4 py-3">
+              <tr key={user.id} className="transition-colors duration-150 hover:bg-background/60">
+                <td className="py-3 pr-4 pl-5 sm:pl-6">
                   <div className="flex items-center gap-3">
                     <Avatar name={user.name} seed={user.id} />
                     <div className="min-w-0">
                       <p className="truncate font-medium text-foreground">{user.name}</p>
-                      <p className="truncate text-muted">{user.email}</p>
+                      <p className="truncate text-[13px] text-muted">{user.email}</p>
                     </div>
                   </div>
                 </td>
@@ -141,12 +141,14 @@ export function UsersTable({ users, loading, sort, dir, onSort, onEdit, onDelete
                 <td className="px-4 py-3">
                   <StatusBadge status={user.status} />
                 </td>
-                <td className="hidden px-4 py-3 text-muted lg:table-cell">{user.location || "—"}</td>
-                <td className="px-4 py-3 whitespace-nowrap text-muted">{formatDate(user.joinedAt)}</td>
-                <td className="hidden px-4 py-3 whitespace-nowrap text-muted xl:table-cell">
+                <td className="hidden px-4 py-3 text-ink-2 lg:table-cell">{user.location || "—"}</td>
+                <td className="px-4 py-3 font-mono text-[12.5px] whitespace-nowrap text-ink-2 tabular-nums">
+                  {formatDate(user.joinedAt)}
+                </td>
+                <td className="hidden px-4 py-3 font-mono text-[12.5px] whitespace-nowrap text-muted xl:table-cell">
                   {user.status === "pending" ? "Never" : formatRelative(user.lastActiveAt)}
                 </td>
-                <td className="px-4 py-2">
+                <td className="py-2 pr-3 pl-4 sm:pr-4">
                   <RowActions user={user} onEdit={onEdit} onDelete={onDelete} />
                 </td>
               </tr>
@@ -166,7 +168,7 @@ export function UsersTable({ users, loading, sort, dir, onSort, onEdit, onDelete
               <div className="mt-2 flex flex-wrap items-center gap-2">
                 <RoleBadge role={user.role} />
                 <StatusBadge status={user.status} />
-                <span className="text-xs text-muted">Joined {formatDate(user.joinedAt)}</span>
+                <span className="font-mono text-[11px] text-muted">Joined {formatDate(user.joinedAt)}</span>
               </div>
             </div>
             <RowActions user={user} onEdit={onEdit} onDelete={onDelete} />

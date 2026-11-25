@@ -107,6 +107,8 @@ export function UsersView() {
   return (
     <>
       <PageHeader
+        index="02"
+        eyebrow="Directory"
         title="Users"
         description="Search, filter and manage everyone with access to your workspace."
         actions={

@@ -1,7 +1,21 @@
 import { ArrowDownRight, ArrowUpRight } from "lucide-react";
-import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/feedback";
 import { cn } from "@/lib/utils";
+
+/**
+ * "Spec-sheet" grid: stat cells share hairline borders inside one surface,
+ * instead of floating as separate cards.
+ */
+export function StatGrid({ children, label }: { children: React.ReactNode; label: string }) {
+  return (
+    <section
+      aria-label={label}
+      className="grid grid-cols-2 overflow-hidden rounded-2xl bg-surface shadow-sm ring-1 ring-line xl:grid-cols-4"
+    >
+      {children}
+    </section>
+  );
+}
 
 interface StatCardProps {
   label: string;
@@ -21,34 +35,45 @@ export function StatCard({ label, icon, value, delta, deltaLabel, hint, loading 
   const positive = hasDelta && delta >= 0;
 
   return (
-    <Card className="p-5">
-      <div className="flex items-center justify-between gap-3">
-        <p className="text-sm font-medium text-muted">{label}</p>
-        <span className="rounded-lg bg-primary-soft p-2 text-primary" aria-hidden>
+    <div
+      className={cn(
+        "group relative min-w-0 p-4 sm:p-6",
+        // Shared hairlines (right + bottom); the container clips the outer edges.
+        "shadow-[1px_0_0_0_var(--line),0_1px_0_0_var(--line)]",
+        // Orange top rule that draws in on hover, from the landing page's feature grid.
+        "before:absolute before:inset-x-0 before:top-0 before:h-0.5 before:origin-left before:scale-x-0 before:bg-accent",
+        "before:transition-transform before:duration-500 before:ease-out hover:before:scale-x-100",
+      )}
+    >
+      <div className="flex items-center gap-2 text-muted">
+        <span className="[&>svg]:size-[15px]" aria-hidden>
           {icon}
         </span>
+        <p className="eyebrow">{label}</p>
       </div>
 
       {loading || value === undefined ? (
-        <div className="mt-3 space-y-2">
-          <Skeleton className="h-8 w-28" />
-          <Skeleton className="h-4 w-36" />
+        <div className="mt-5 space-y-2.5">
+          <Skeleton className="h-9 w-32 max-w-full" />
+          <Skeleton className="h-4 w-40 max-w-full" />
         </div>
       ) : (
         <>
-          <p className="mt-2 text-3xl font-semibold tracking-tight text-foreground tabular-nums">{value}</p>
-          <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
+          <p className="mt-4 text-[1.625rem] leading-none sm:text-[2.25rem] font-semibold tracking-[-0.045em] text-foreground tabular-nums">
+            {value}
+          </p>
+          <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px]">
             {hasDelta && (
               <span
                 className={cn(
-                  "inline-flex items-center gap-0.5 rounded-md px-1.5 py-0.5 text-xs font-medium tabular-nums",
+                  "inline-flex h-5 items-center gap-0.5 rounded px-1.5 font-mono text-[11px] font-semibold tabular-nums",
                   positive ? "bg-success-soft text-success" : "bg-danger-soft text-danger",
                 )}
               >
                 {positive ? (
-                  <ArrowUpRight className="size-3.5" aria-hidden />
+                  <ArrowUpRight className="size-3" strokeWidth={2.5} aria-hidden />
                 ) : (
-                  <ArrowDownRight className="size-3.5" aria-hidden />
+                  <ArrowDownRight className="size-3" strokeWidth={2.5} aria-hidden />
                 )}
                 <span className="sr-only">{positive ? "Up" : "Down"} </span>
                 {positive ? "+" : "−"}
@@ -59,6 +84,6 @@ export function StatCard({ label, icon, value, delta, deltaLabel, hint, loading 
           </div>
         </>
       )}
-    </Card>
+    </div>
   );
 }

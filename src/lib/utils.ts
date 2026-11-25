@@ -69,14 +69,8 @@ export function getInitials(name: string) {
   return (first + last).toUpperCase();
 }
 
-const AVATAR_TONES = [
-  "bg-blue-100 text-blue-800 dark:bg-blue-500/20 dark:text-blue-200",
-  "bg-emerald-100 text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-200",
-  "bg-amber-100 text-amber-800 dark:bg-amber-500/20 dark:text-amber-200",
-  "bg-violet-100 text-violet-800 dark:bg-violet-500/20 dark:text-violet-200",
-  "bg-rose-100 text-rose-800 dark:bg-rose-500/20 dark:text-rose-200",
-  "bg-cyan-100 text-cyan-800 dark:bg-cyan-500/20 dark:text-cyan-200",
-] as const;
+/** Pastel avatar classes (defined in globals.css), matching the landing page. */
+const AVATAR_TONES = ["av-1", "av-2", "av-3", "av-4", "av-5"] as const;
 
 /** Stable avatar colour derived from a string (e.g. a user id). */
 export function avatarTone(seed: string) {
