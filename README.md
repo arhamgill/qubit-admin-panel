@@ -3,7 +3,7 @@
 A responsive admin dashboard built with **Next.js 16 (App Router)**, **React 19**, **TypeScript** and **Tailwind CSS v4**.
 It uses a mock API layer backed by `localStorage`, so it runs with **no database, no backend and no environment variables**.
 
-> **Demo login:** `alex.morgan@example.com` / `Demo1234` (or click **Fill in** on the sign-in page).
+> **Demo login:** `alex.morgan@example.com` / `Demo1234` (or click **Sign in with demo account** on the sign-in page).
 
 ## Features
 

@@ -7,6 +7,9 @@ const VARIANTS = {
     "bg-surface text-foreground shadow-sm ring-1 ring-line-strong ring-inset hover:ring-muted hover:shadow-md",
   ghost: "text-ink-2 hover:bg-foreground/5 hover:text-foreground",
   danger: "bg-danger-solid text-white shadow-sm hover:bg-danger-hover",
+  /** Reserved for the single most important call to action on a screen. */
+  accent:
+    "bg-accent-solid text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_1px_2px_rgba(20,20,19,0.2),0_4px_12px_-4px_rgba(200,70,26,0.45)] hover:bg-accent-solid-hover",
 } as const;
 
 const SIZES = {

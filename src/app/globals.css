@@ -39,6 +39,9 @@
   --accent: #ef5a1f;
   --accent-text: #b34317;
   --accent-soft: #fbe5da;
+  /* Solid orange for the rare filled accent button: white text passes AA (4.8:1). */
+  --accent-solid: #c8461a;
+  --accent-solid-hover: #b34317;
 
   /* Status (text-safe shades + soft tints) */
   --success: #1a7f4b;
@@ -136,6 +139,8 @@
   --color-accent: var(--accent);
   --color-accent-text: var(--accent-text);
   --color-accent-soft: var(--accent-soft);
+  --color-accent-solid: var(--accent-solid);
+  --color-accent-solid-hover: var(--accent-solid-hover);
   --color-success: var(--success);
   --color-success-dot: var(--success-dot);
   --color-success-soft: var(--success-soft);
